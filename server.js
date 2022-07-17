@@ -15,10 +15,16 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/index.html'));
 });
 
+const server = app.listen(process.env.PORT || 8000, () => {
+  console.log('Server is running on port: 8000');
+});
+
 app.use((req, res) => {
   res.status(404).send('404 You shall not pass!');
 });
 
-const server = app.listen(process.env.PORT || 8000, () => {
-  console.log('Server is running on port: 8000');
+const io = socket(server);
+
+io.on('connection', (socket) => {
+  console.log('New client! Its id – ' + socket.id);
 });
