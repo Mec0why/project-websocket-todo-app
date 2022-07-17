@@ -32,6 +32,22 @@ io.on('connection', (socket) => {
     socket.emit('updateData', db.tasks);
   });
 
+  socket.on('addTask', (task) => {
+    db.tasks.push(task);
+    socket.broadcast.emit('addTask', task);
+  });
+
+  socket.on('removeTask', (task) => {
+    const filteredDb = db.tasks.filter((task) =>
+      task.id === socket.id ? false : true
+    );
+
+    db.tasks = filteredDb;
+    console.log(db.tasks);
+
+    socket.broadcast.emit('removeTask', task);
+  });
+
   socket.on('disconnect', () => {
     console.log('Oh, socket ' + socket.id + ' has left');
   });
