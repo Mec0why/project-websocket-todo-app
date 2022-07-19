@@ -1,7 +1,7 @@
 // initialize server
 const express = require('express'),
   app = express(),
-  socket = require('socket.io'),
+  io = require('socket.io'),
   db = require('./db'),
   path = require('path');
 
@@ -23,14 +23,12 @@ app.use((req, res) => {
   res.status(404).send('404 You shall not pass!');
 });
 
-const io = socket(server);
+const socket = io(server);
 
-io.on('connection', (socket) => {
+socket.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
-  socket.on('updateData', () => {
-    socket.emit('updateData', db.tasks);
-  });
+  socket.emit('updateData', db.tasks);
 
   socket.on('addTask', (task) => {
     db.tasks.push(task);

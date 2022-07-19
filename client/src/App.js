@@ -1,6 +1,17 @@
-
+import { useState, useEffect } from 'react';
+import io from 'socket.io-client';
+const serverURL = 'http://localhost:8000/';
 
 const App = () => {
+  const [socket] = useState(io(serverURL));
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    socket.on('updateData', (tasks) => {
+      setTasks(tasks);
+    });
+  }, []);
+
   return (
     <div className='App'>
       <header>
@@ -11,6 +22,11 @@ const App = () => {
         <h2>Tasks</h2>
 
         <ul className='tasks-section__list' id='tasks-list'>
+          {tasks.map((task) => (
+            <li key={task.id} className='task'>
+              {task.name} <button className='btn btn--red'>Remove</button>
+            </li>
+          ))}
           <li className='task'>
             Shopping <button className='btn btn--red'>Remove</button>
           </li>
