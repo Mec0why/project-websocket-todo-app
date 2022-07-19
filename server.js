@@ -35,15 +35,15 @@ socket.on('connection', (socket) => {
     socket.broadcast.emit('addTask', task);
   });
 
-  socket.on('removeTask', (task) => {
+  socket.on('removeTask', (taskId) => {
     const filteredDb = db.tasks.filter((task) =>
-      task.id === socket.id ? false : true
+      task.id === taskId ? false : true
     );
 
     db.tasks = filteredDb;
     console.log(db.tasks);
 
-    socket.broadcast.emit('removeTask', task);
+    socket.broadcast.emit('removeTask', taskId);
   });
 
   socket.on('disconnect', () => {

@@ -10,7 +10,16 @@ const App = () => {
     socket.on('updateData', (tasks) => {
       setTasks(tasks);
     });
+
+    socket.on('removeTask', (tasks) => {
+      setTasks(tasks);
+    });
   }, []);
+
+  const removeTask = (taskId) => {
+    setTasks((tasks) => tasks.filter((task) => task.id !== taskId));
+    socket.emit('removeTask', taskId);
+  };
 
   return (
     <div className='App'>
@@ -24,7 +33,13 @@ const App = () => {
         <ul className='tasks-section__list' id='tasks-list'>
           {tasks.map((task) => (
             <li key={task.id} className='task'>
-              {task.name} <button className='btn btn--red'>Remove</button>
+              {task.name}{' '}
+              <button
+                onClick={() => removeTask(task.id)}
+                className='btn btn--red'
+              >
+                Remove
+              </button>
             </li>
           ))}
         </ul>
