@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import shortid from 'shortid';
 
-const serverURL = 'http://localhost:8000/';
+const serverURL = 'localhost:8000';
 
 const App = () => {
-  const [socket] = useState(io(serverURL));
+  const [socket] = useState(
+    io(serverURL, {
+      transports: ['websocket'],
+    })
+  );
   const [tasks, setTasks] = useState([]);
   const [taskName, setTaskName] = useState('');
 

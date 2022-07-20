@@ -1,13 +1,20 @@
 // initialize server
 const express = require('express'),
   app = express(),
-  io = require('socket.io'),
+  socket = require('socket.io'),
   db = require('./db'),
-  path = require('path');
+  path = require('path'),
+  cors = require('cors');
 
 app.get('/tasks', (req, res) => {
   res.json(db.tasks);
 });
+
+app.use(
+  cors({
+    origin: ['http://localhost:8000', 'http://localhost:3000'],
+  })
+);
 
 app.use(express.static(path.join(__dirname, '/client')));
 
@@ -23,9 +30,9 @@ const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running on port: 8000');
 });
 
-const socket = io(server);
+const io = socket(server);
 
-socket.on('connection', (socket) => {
+io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
 
   socket.emit('updateData', db.tasks);
