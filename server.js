@@ -13,6 +13,7 @@ app.get('/tasks', (req, res) => {
 app.use(
   cors({
     origin: ['http://localhost:8000', 'http://localhost:3000'],
+    methods: '*',
   })
 );
 
@@ -30,7 +31,15 @@ const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running on port: 8000');
 });
 
-const io = socket(server);
+const io = socket(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: '*',
+    transports: ['websocket', 'polling'],
+    credentials: true,
+  },
+  allowEIO3: true,
+});
 
 io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);

@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import shortid from 'shortid';
 
-const serverURL = 'localhost:8000';
+const serverURL = 'http://localhost:8000';
 
 const App = () => {
   const [socket] = useState(
     io(serverURL, {
-      transports: ['websocket'],
+      withCredentials: true,
     })
   );
   const [tasks, setTasks] = useState([]);
@@ -18,8 +18,14 @@ const App = () => {
       updateTasks(tasks);
     });
 
+    // socket.on('connection', (tasks) => {
+    // //   socket.emit('updateData');
+    // //   updateTasks(tasks);
+    // // });
+
     socket.on('removeTask', (taskId) => {
       removeTask(taskId, false);
+      console.log(taskId);
     });
 
     socket.on('addTask', ({ id, name }) => {
@@ -27,28 +33,31 @@ const App = () => {
     });
   }, []);
 
-  const addTask = (task) => {
-    setTasks((tasks) => [...tasks, task]);
-    setTaskName('');
-  };
-
-  console.log(tasks);
-
-  const updateTasks = (tasksData) => {
-    setTasks(tasksData);
+  const updateTasks = (tasks) => {
+    setTasks(tasks);
   };
 
   const removeTask = (taskId, isLocal) => {
     setTasks((tasks) => tasks.filter((task) => task.id !== taskId));
+    console.log(taskId);
     if (isLocal) {
       socket.emit('removeTask', taskId);
     }
   };
 
+  const addTask = (task) => {
+    setTasks((tasks) => [...tasks, task]);
+    console.log(tasks);
+    setTaskName('');
+  };
+
+  console.log(tasks);
+
   const submitForm = (e) => {
     e.preventDefault();
-    addTask({ id: shortid.generate(), name: taskName });
-    socket.emit('addTask', { id: shortid.generate(), name: taskName });
+    const newTask = { id: shortid.generate(), name: taskName };
+    addTask(newTask);
+    socket.emit('addTask', newTask);
   };
 
   return (
